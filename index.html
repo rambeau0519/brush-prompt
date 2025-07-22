@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Brush Cost Prompt Generator</title>
+</head>
+<body>
+  <h1>Enter Brush Total Cost</h1>
+  <input type="number" id="cost" placeholder="e.g., 2.5" step="0.01" />
+  <button onclick="generatePrompt()">Generate Prompt</button>
+  <p id="result"></p>
+
+  <script>
+    async function generatePrompt() {
+      const cost = document.getElementById('cost').value;
+      if (!cost) {
+        alert('Please enter a total cost');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ totalCost: cost }),
+        });
+
+        const data = await res.json();
+
+        if (data.prompt) {
+          document.getElementById('result').textContent = data.prompt;
+        } else {
+          document.getElementById('result').textContent = 'Error: ' + (data.error || 'Unknown error');
+        }
+      } catch (err) {
+        document.getElementById('result').textContent = 'Fetch error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
